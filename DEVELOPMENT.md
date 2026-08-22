@@ -101,8 +101,6 @@ The `package.json` does not currently contain custom build or lint scripts.
 | `npm install` | Install all dependencies |
 | `node server.js` | Start the Express and WebSocket server |
 
-*(There are no testing or linting commands implemented in this repository).*
-
 ---
 
 ## 6. Local Architecture
@@ -125,7 +123,6 @@ flowchart LR
 **Database Technology:** Local File System (`callbacks.json`).
 * There is no formal database (MongoDB, SQL, etc.).
 * When the AI books a callback, `bookCallbackAsync()` appends a JSON object to `./callbacks.json`.
-* **Development Warning:** If `callbacks.json` does not exist, the code handles it gracefully by creating a new array. However, because it uses `fs.readFileSync` and `fs.writeFileSync`, it is strictly synchronous and prone to race conditions under heavy load.
 
 ---
 
@@ -197,20 +194,6 @@ Because the application is a monolith, new features generally belong in `server.
   * You cannot use Ngrok in production. You must deploy to a server with a public IP/domain (like Railway or Render).
   * You must update Twilio's webhooks to point to your production domain.
   * You must ensure the deployment platform has Chromium installed (use `CHROME_BIN`).
-
----
-
-## 14. Code Quality & Workflows
-
-**Unknown / Not determinable from the repository.**
-
-The repository currently lacks:
-* Prettier / ESLint configurations
-* Unit / Integration tests (`npm test` returns an error)
-* CI/CD pipelines (GitHub Actions)
-* TypeScript
-
-Modifications should be pushed directly to `main` and manually verified by calling the Twilio number.
 
 ---
 

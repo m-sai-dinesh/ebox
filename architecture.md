@@ -213,30 +213,7 @@ Managed via `dotenv`.
 
 ---
 
-## 10. Technical Debt & Architecture Risks
-
-| Issue | Evidence | Impact | Severity | Suggested Direction |
-| ----- | -------- | ------ | -------- | ------------------- |
-| **Missing Webhook Validation** | `/twiml` does not verify the Twilio signature. | Anyone can POST to `/twiml` and generate arbitrary TwiML. | High | Implement `twilio.webhook()` middleware. |
-| **Public Outbound API** | `/start-call` has no rate limiting or auth. | Malicious users can drain the Twilio account balance. | High | Add rate limiting and basic authentication. |
-| **File DB Race Conditions** | `fs.writeFileSync` used in `callbacks.json`. | Concurrent calls booking meetings could overwrite the file. | Medium | Move to SQLite or MongoDB. |
-| **Puppeteer Overhead** | `whatsapp-web.js` runs a full Chromium instance. | High RAM usage (~300-500MB). Difficult to run on serverless (e.g., Vercel). | Medium | Keep on VPS/Railway, or migrate to official WhatsApp Cloud API. |
-| **Global State** | `isWaReady` and `waClient` are global. | Difficult to scale horizontally across multiple instances. | Low (for now) | Accept single-instance limitation or decouple WhatsApp worker. |
-
----
-
-## 11. Scalability Analysis
-
-The system is currently designed as a **Single-Instance Stateful Service**.
-
-- **WebSockets:** Keep the connection bound to a single server instance.
-- **WhatsApp Web:** Requires a persistent file system for `.wwebjs_auth` and cannot be easily load-balanced across multiple nodes without sticky sessions and shared volumes.
-- **Throughput:** Node.js can handle hundreds of concurrent WebSocket connections, but the bottleneck will be CPU usage for processing multiple concurrent Gemini streaming responses, and Puppeteer RAM usage.
-- **Horizontal Scaling:** **Not currently possible** without significant re-architecture (moving WhatsApp to a separate microservice and using a Redis pub/sub layer for WebSocket routing).
-
----
-
-## 12. Deployment Configuration
+## 10. Deployment Configuration
 
 The application is deployed as a standard Node.js process.
 - **Entry point:** `node server.js`
